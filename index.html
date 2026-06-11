@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>孕早期（4周）每日安排 · 科学调整可视化</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f7f9fc;
+            font-family: system-ui, -apple-system, 'Segoe UI', 'Noto Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.45;
+            color: #1a2c3e;
+            padding: 1.5rem;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        /* 头部 */
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 1.9rem;
+            background: linear-gradient(135deg, #2b7a4b, #4c9a6e);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+            margin-bottom: 0.5rem;
+        }
+
+        .badge {
+            background: #e9ecef;
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            display: inline-block;
+            color: #2c5a3b;
+            font-weight: 500;
+        }
+
+        .sub {
+            color: #5b6e8c;
+            margin-top: 0.3rem;
+            font-size: 0.9rem;
+        }
+
+        /* 双栏对比卡片区域 */
+        .compare-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .card {
+            flex: 1;
+            min-width: 260px;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05), 0 4px 8px rgba(0,0,0,0.02);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .card-header {
+            padding: 1.2rem 1.5rem;
+            font-weight: 700;
+            font-size: 1.3rem;
+            border-bottom: 1px solid #eef2f6;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-header.before {
+            background: #fff3e8;
+            color: #b45f2b;
+        }
+
+        .card-header.after {
+            background: #e6f4ea;
+            color: #2b6e3c;
+        }
+
+        .card-content {
+            padding: 1.4rem 1.5rem;
+        }
+
+        .risk-item {
+            background: #fff1f0;
+            border-left: 4px solid #e67e22;
+            padding: 0.8rem;
+            border-radius: 16px;
+            margin-bottom: 1.2rem;
+            font-size: 0.9rem;
+        }
+
+        .adjust-item {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .adjust-icon {
+            font-size: 1.3rem;
+            min-width: 28px;
+            text-align: center;
+        }
+
+        .adjust-text strong {
+            display: block;
+            font-size: 0.95rem;
+            margin-bottom: 0.2rem;
+            color: #1e2f41;
+        }
+
+        .adjust-text p {
+            font-size: 0.85rem;
+            color: #4a627a;
+            line-height: 1.4;
+        }
+
+        .highlight {
+            background: #def1e4;
+            padding: 0.2rem 0.4rem;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 0.8rem;
+            display: inline-block;
+        }
+
+        /* 时间轴卡片 */
+        .timeline-section {
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+            overflow-x: auto;
+        }
+
+        .timeline-title {
+            padding: 1.2rem 1.5rem;
+            background: #fef9e6;
+            border-bottom: 2px solid #e9d6a3;
+            font-weight: 700;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .timeline-grid {
+            display: flex;
+            flex-direction: column;
+            padding: 0.5rem 0;
+        }
+
+        .timeline-row {
+            display: flex;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #edf2f7;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            transition: background 0.1s;
+        }
+
+        .timeline-row:hover {
+            background: #fafbfe;
+        }
+
+        .time-col {
+            width: 100px;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #2b7a4b;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .activity-col {
+            flex: 1;
+            font-size: 0.93rem;
+            color: #2c3e50;
+        }
+
+        .note-col {
+            width: 220px;
+            font-size: 0.8rem;
+            color: #5f7f9e;
+            background: #f8fafd;
+            padding: 0.3rem 0.8rem;
+            border-radius: 40px;
+            margin-left: 0.5rem;
+        }
+
+        @media (max-width: 700px) {
+            .timeline-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+                padding: 1rem;
+            }
+            .time-col, .note-col {
+                width: auto;
+                margin-left: 0;
+            }
+            .note-col {
+                background: none;
+                padding-left: 0;
+            }
+            .compare-grid {
+                flex-direction: column;
+            }
+            body {
+                padding: 1rem;
+            }
+        }
+
+        /* 快速要点卡片组 */
+        .quick-tips {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .tip-card {
+            background: #ffffffdd;
+            backdrop-filter: blur(2px);
+            background: white;
+            border-radius: 24px;
+            padding: 1.2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            border: 1px solid #e2edf2;
+            transition: all 0.2s;
+        }
+
+        .tip-card .emoji-big {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        .tip-card h4 {
+            font-size: 1rem;
+            margin-bottom: 0.3rem;
+            color: #1f5e3a;
+        }
+
+        .tip-card p {
+            font-size: 0.8rem;
+            color: #4d627a;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #8a9bb0;
+            margin-top: 2rem;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 1.5rem;
+        }
+
+        .leaf-icon {
+            display: inline-block;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🌱 孕4周 · 每日科学调整方案</h1>
+        <div class="badge">✨ 关键窗口期 · 立即优化 ✨</div>
+        <div class="sub">根据运动、饮食、作息全面升级 | 降低风险 · 护航早期发育</div>
+    </div>
+
+    <!-- 左右对比：原安排 vs 科学调整 -->
+    <div class="compare-grid">
+        <!-- 原安排 -->
+        <div class="card">
+            <div class="card-header before">
+                <span>⚠️ 调整前安排</span> <span style="font-size: 0.85rem;">(存在较高风险)</span>
+            </div>
+            <div class="card-content">
+                <div class="risk-item">
+                    🚨 <strong>高风险项</strong>：高强度爬坡（坡度14）、长期剩菜饮食、午睡过晚过长、深夜睡眠
+                </div>
+                <div class="adjust-item">
+                    <div class="adjust-icon">🏃‍♀️</div>
+                    <div class="adjust-text"><strong>运动 · 爬坡40分钟</strong><p>坡度12-14，速度3.5-4 → 增加腹压/体温升高，流产风险↑</p></div>
+                </div>
+                <div class="adjust-item">
+                    <div class="adjust-icon">🍲</div>
+                    <div class="adjust-text"><strong>饮食 · 剩菜 + 两餐不规律</strong><p>中午吃隔夜菜（李斯特菌风险），早午餐缺失，无叶酸补充</p></div>
+                </div>
+                <div class="adjust-item">
+                    <div class="adjust-icon">😴</div>
+                    <div class="adjust-text"><strong>作息 · 15-16点午睡1小时 + 24点睡觉</strong><p>午睡过晚影响夜间睡眠，长期不足7小时</p></div>
+                </div>
+                <div class="adjust-item">
+                    <div class="adjust-icon">🛁</div>
+                    <div class="adjust-text"><strong>洗澡 · 时间水温未知</strong><p>可能过热/过长 → 胚胎神经管敏感期风险</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 科学调整后 -->
+        <div class="card">
+            <div class="card-header after">
+                <span>✅ 孕早期科学调整方案</span> <span style="font-size:0.8rem;">(即刻执行)</span>
+            </div>
+            <div class="card-content">
+                <div class="adjust-item">
+                    <div class="adjust-icon">🚶‍♀️</div>
+                    <div class="adjust-text"><strong>运动 · 平地快走30分钟</strong><p>坡度取消，心率＜140，每周5天 + 2天休息；防过热/脱水</p></div>
+                </div>
+                <div class="adjust-item">
+                    <div class="adjust-icon">🥗</div>
+                    <div class="adjust-text"><strong>饮食 · 禁剩菜+三餐加餐</strong><p>新鲜烹饪，立即补充叶酸400-800μg；增加优质蛋白/钙/铁</p></div>
+                </div>
+                <div class="adjust-item">
+                    <div class="adjust-icon">💤</div>
+                    <div class="adjust-text"><strong>作息 · 午睡13:00-13:30（20-30分钟）</strong><p>夜间22:30准备入睡，保证7-9小时核心睡眠</p></div>
+                </div>
+                <div class="adjust-item">
+                    <div class="adjust-icon">🚿</div>
+                    <div class="adjust-text"><strong>沐浴 · 水温38-40℃ ≤15分钟</strong><p>淋浴不盆浴，避免桑拿/过热浴缸</p></div>
+                </div>
+                <div class="adjust-item">
+                    <div class="adjust-icon">🍎</div>
+                    <div class="adjust-text"><strong>营养强化 · 叶酸片+均衡加餐</strong><p>每日两次加餐（坚果/酸奶/水果），防止低血糖酮症</p></div>
+                </div>
+                <div class="highlight" style="margin-top: 0.4rem;">🌟 关键调整: 停止爬坡 · 扔掉剩菜 · 提前午睡并缩短 · 11点前入睡</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 详细一日时间线 (调整后) -->
+    <div class="timeline-section">
+        <div class="timeline-title">
+            <span>⏰ 科学一日时间线 · 孕早期黄金节奏</span>
+            <span style="font-size: 0.75rem; background:#eef2f0; padding:0.2rem 0.6rem; border-radius:20px;">怀孕4周起推荐</span>
+        </div>
+        <div class="timeline-grid">
+            <div class="timeline-row">
+                <div class="time-col"><span>🕘 09:00</span></div>
+                <div class="activity-col"><strong>起床 + 温水150ml</strong> · 立刻吃早餐（全麦面包1片+煮鸡蛋+半杯奶）</div>
+                <div class="note-col">⚠️ 防止空腹运动/低血糖</div>
+            </div>
+            <div class="timeline-row">
+                <div class="time-col"><span>🏃‍♀️ 09:30-10:00</span></div>
+                <div class="activity-col"><strong>平地快走30分钟</strong>（速度3.5-4，无坡度）心率控制在“能说话不喘”</div>
+                <div class="note-col">✅ 替代原爬坡，安全有氧</div>
+            </div>
+            <div class="timeline-row">
+                <div class="time-col"><span>🍌 10:15</span></div>
+                <div class="activity-col">加餐：半个苹果 / 一小把原味坚果 + 水</div>
+                <div class="note-col">补充能量，稳定血糖</div>
+            </div>
+            <div class="timeline-row">
+                <div class="time-col"><span>🥗 11:30-12:00</span></div>
+                <div class="activity-col"><strong>午餐（新鲜饭菜）</strong>：杂粮饭半碗 + 鸡胸/鱼 + 深绿色现炒蔬菜</div>
+                <div class="note-col">❗ 禁止吃前一天剩菜（李斯特菌风险）</div>
+            </div>
+            <div class="timeline-row">
+                <div class="time-col"><span>😴 13:00-13:30</span></div>
+                <div class="activity-col"><strong>午睡小憩 20-30分钟</strong>（定闹钟）</div>
+                <div class="note-col">原15-16点午睡→调整为中午，避免影响夜间睡眠</div>
+            </div>
+            <div class="timeline-row">
+                <div class="time-col"><span>🍶 15:00</span></div>
+                <div class="activity-col">下午加餐：无糖酸奶/一小杯牛奶 + 2颗核桃</div>
+                <div class="note-col">补充钙和DHA</div>
+            </div>
+            <div class="timeline-row">
+                <div class="time-col"><span>🍲 17:00-18:30</span></div>
+                <div class="activity-col">备餐 · 晚餐（现做现吃）瘦肉+两种蔬菜+杂粮饭；注意生熟分离</div>
+                <div class="note-col">避免吸入过多油烟，开油烟机</div>
+            </div>
+            <div class="timeline-row">
+                <div class="time-col"><span>🚶‍♀️ 19:30-20:10</span></div>
+                <div class="activity-col">饭后休息30分钟 → 散步40分钟（平坦路面）</div>
+                <div class="note-col">促进循环，缓解腹胀/放屁（孕激素致肠道产气正常）</div>
+            </div>
+            <div class="timeline-row">
+                <div class="time-col"><span>🥛 21:00</span></div>
+                <div class="activity-col">睡前加餐（可选）：温牛奶半杯 / 苏打饼干2片</div>
+                <div class="note-col">缓解晨吐，助眠</div>
+            </div>
+            <div class="timeline-row">
+                <div class="time-col"><span>🚿 22:00-22:15</span></div>
+                <div class="activity-col"><strong>淋浴</strong> 水温38-40℃ (手背温和不烫) 时间＜15分钟</div>
+                <div class="note-col">绝对禁止过热/泡澡/桑拿</div>
+            </div>
+            <div class="timeline-row">
+                <div class="time-col"><span>📖 22:30</span></div>
+                <div class="activity-col">关闭电子设备，放松冥想 / 轻柔音乐</div>
+                <div class="note-col">营造褪黑素分泌环境</div>
+            </div>
+            <div class="timeline-row">
+                <div class="time-col"><span>🌙 23:00</span></div>
+                <div class="activity-col"><strong>熄灯入睡</strong>（目标23:00-23:30）</div>
+                <div class="note-col">原24点睡觉 → 提前1小时，保障胚胎发育激素分泌</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 关键调整速览卡片 -->
+    <div class="quick-tips">
+        <div class="tip-card">
+            <div class="emoji-big">⛔🚫</div>
+            <h4>立即停止爬坡运动</h4>
+            <p>坡度/剧烈跳跃会使核心体温升高，孕早期极其危险 → 全部替换为平地快走或椭圆机</p>
+        </div>
+        <div class="tip-card">
+            <div class="emoji-big">🥘❌</div>
+            <h4>坚决不吃隔夜菜</h4>
+            <p>尤其绿叶菜/海鲜/豆制品，冰箱中李斯特菌可导致流产。每餐新鲜烹饪，吃多少做多少。</p>
+        </div>
+        <div class="tip-card">
+            <div class="emoji-big">💊🍃</div>
+            <h4>叶酸立即补充</h4>
+            <p>每日400-800μg，预防神经管畸形，从今天开始。搭配富含铁和钙的食物。</p>
+        </div>
+        <div class="tip-card">
+            <div class="emoji-big">🌡️🛁</div>
+            <h4>水温＜40℃，≤15分钟</h4>
+            <p>孕早期洗澡水温过高会增加胎儿神经管缺陷风险，淋浴最佳。</p>
+        </div>
+        <div class="tip-card">
+            <div class="emoji-big">😴⏰</div>
+            <h4>规律睡眠优先</h4>
+            <p>午睡不超30分钟且不晚于14:00；夜间争取23点前入睡。</p>
+        </div>
+        <div class="tip-card">
+            <div class="emoji-big">🍽️➕</div>
+            <h4>少食多餐+控恶心</h4>
+            <p>上午/下午各加一餐，避免饥饿性恶心；晨起吃苏打饼干缓解孕吐。</p>
+        </div>
+    </div>
+
+    <!-- 特别注意事项（基于症状） -->
+    <div style="background: #eaf7f0; border-radius: 28px; padding: 1.2rem 1.5rem; margin: 1.5rem 0;">
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+            <div style="display: flex; gap: 0.8rem; align-items: center;">
+                <span style="font-size: 2rem;">🤰🏼</span>
+                <div><strong style="font-size: 1rem;">⚠️ 针对早孕症状（恶心、厌食、胀气放屁）</strong><br>
+                <span style="font-size: 0.85rem;">孕4周激素波动导致肠胃蠕动减慢 → 放屁增多+恶心正常。避免豆制品/洋葱/红薯等产气食物，喝姜茶/薄荷茶，饭后轻揉腹部。</span></div>
+            </div>
+            <div style="font-size: 0.85rem; background: white; padding: 0.4rem 1rem; border-radius: 40px;">
+                🩺 若腹痛/出血请急诊
+            </div>
+        </div>
+    </div>
+
+    <!-- 每周产检备忘 -->
+    <div style="background: #ffffff; border-radius: 24px; padding: 1rem 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.02); border: 1px solid #e9f0e9;">
+        <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; justify-content: space-between;">
+            <div><span style="font-weight: 700;">📅 孕早期就医提醒：</span> 孕6-7周B超确认宫内胎心；抽血查HCG/孕酮/甲功。日常记录体重及异常症状。</div>
+            <div><span class="highlight">📞 出现持续剧烈呕吐/褐色分泌物 → 立即就医</span></div>
+        </div>
+    </div>
+
+    <footer>
+        🌿 基于孕4周胚胎神经管分化关键期 · 运动/饮食/作息科学循证调整 | 个体情况请咨询产科医生
+    </footer>
+</div>
+</body>
+</html>
